@@ -10,36 +10,28 @@
         <div
           class="text-2xl font-black tracking-tighter text-stone-900 dark:text-stone-50 font-headline"
         >
-          ExecutiveElite
+          Workintarget
         </div>
         <div class="hidden md:flex items-center space-gap-8 gap-8">
           <a
-            class="text-red-600 dark:text-red-500 font-bold border-b-2 border-red-600 pb-1 font-body"
-            href="#"
-            >Solutions</a
+            v-for="link in [
+              { id: 'solutions', text: 'Solutions' },
+              { id: 'aboutus', text: 'Chi siamo' },
+              { id: 'reviews', text: 'Cosa dicono di noi' },
+              { id: 'contact', text: 'Contattaci' }
+            ]"
+            :key="link.id"
+            :href="`#${link.id}`"
+            :class="[
+              'pb-1 font-body transition-colors duration-300',
+              activeSection === link.id
+                ? 'text-red-600 dark:text-red-500 font-bold border-b-2 border-red-600'
+                : 'text-stone-600 dark:text-stone-400 font-medium hover:text-red-700 dark:hover:text-red-400'
+            ]"
           >
-          <a
-            class="text-stone-600 dark:text-stone-400 font-medium hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300 font-body"
-            href="#"
-            >Insights</a
-          >
-          <a
-            class="text-stone-600 dark:text-stone-400 font-medium hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300 font-body"
-            href="#"
-            >Advisory</a
-          >
-          <a
-            class="text-stone-600 dark:text-stone-400 font-medium hover:text-red-700 dark:hover:text-red-400 transition-colors duration-300 font-body"
-            href="#"
-            >Global Network</a
-          >
+            {{ link.text }}
+          </a>
         </div>
-        <button
-          class="bg-primary text-white px-6 py-3 rounded-full font-bold editorial-gradient hover:opacity-90 transition-opacity flex items-center gap-2"
-        >
-          Partner With Us
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </button>
       </div>
     </nav>
     <main class="pt-24">
@@ -74,11 +66,6 @@
                 href="#contact"
                 >Inizia la Trasformazione</a
               >
-              <a
-                class="px-8 py-4 bg-surface-container-highest text-on-surface rounded-full font-bold hover:bg-surface-container-high transition-colors"
-                href="#profiles"
-                >Scopri il Metodo</a
-              >
             </div>
           </div>
           <div class="relative order-1 md:order-2">
@@ -112,7 +99,7 @@
         </div>
       </section>
       <!-- Features/Highlights -->
-      <section class="py-24 bg-surface-container-low">
+      <section id="solutions" class="py-24 bg-surface-container-low">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
           <div class="grid md:grid-cols-3 gap-8">
             <div
@@ -179,7 +166,7 @@
         </div>
       </section>
       <!-- Professional Profiles -->
-      <section class="py-32" id="profiles">
+      <section id="aboutus" class="py-32">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
           <div
             class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6"
@@ -211,11 +198,6 @@
                   <h3 class="text-3xl font-black text-white font-headline">
                     GIULIA ZANTEI
                   </h3>
-                  <p
-                    class="text-red-400 font-bold uppercase tracking-widest text-sm"
-                  >
-                    Expert Performance Coach
-                  </p>
                 </div>
               </div>
               <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">
@@ -250,11 +232,6 @@
                   <h3 class="text-3xl font-black text-white font-headline">
                     CRISTINA RINALDI
                   </h3>
-                  <p
-                    class="text-red-400 font-bold uppercase tracking-widest text-sm"
-                  >
-                    Strategic Nutritionist
-                  </p>
                 </div>
               </div>
               <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">
@@ -424,7 +401,7 @@
         </div>
       </section>
       <!-- Testimonials -->
-      <section class="py-32 bg-stone-900 text-white">
+      <section id="reviews" class="py-32 bg-stone-900 text-white">
         <div class="max-w-7xl mx-auto px-6 md:px-12 text-center mb-20">
           <h2 class="text-4xl md:text-6xl font-black font-headline mb-6">
             COSA DICONO DI NOI
@@ -780,6 +757,8 @@
 </template>
 
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue';
+
 // calc current month and year
 const currentMonth = new Date().getMonth() + 1;
 const currentYear = new Date().getFullYear();
@@ -788,4 +767,37 @@ const calendlyLink =
   currentYear +
   "-" +
   currentMonth;
+
+const activeSection = ref('');
+
+let observer;
+
+onMounted(() => {
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        activeSection.value = entry.target.id;
+      }
+    });
+  }, {
+    rootMargin: '-40% 0px -40% 0px' 
+  });
+
+  const sections = document.querySelectorAll('section[id]');
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
+});
 </script>
+
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
